@@ -1,0 +1,235 @@
+
+{
+  "name": "AI Appointment setter",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-intake",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [-912, -32],
+      "id": "93ee1f07-07f5-4e60-93e2-2ad759b31621",
+      "name": "Webhook",
+      "webhookId": "3eee2086-8ef3-4ba1-8e0b-a804f096c891"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "AI Appointment Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.body.name }}",
+            "Email": "={{ $json.body.email }}",
+            "CreatedAt": "={{ $now }}",
+            "Status": "New"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CreatedAt",
+              "displayName": "CreatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [-720, -32],
+      "id": "22672a24-4153-473e-9bd9-8fe748eb00f8",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fJEfF3Vr734vNXc4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "leads",
+        "fields": "Name,Email,Status,CreatedAt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.4,
+      "position": [-512, -32],
+      "id": "f421f2c2-d6f5-402e-9c21-7dbb6522f8a0",
+      "name": "Insert documents",
+      "credentials": {
+        "mongoDb": {
+          "id": "AcN4lQsT5BEUEz80",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=Thanks {{ $json.Name }} - Your Appointment Request Received",
+        "message": "=<p>Hi {{$json.Name}},</p>\n   <p>Thank you for requesting <b>{{$json.Service}}</b>.</p>\n   <p>We have received your lead and our team will contact you shortly to confirm your appointment.</p>\n   <p>Status: New<br>Lead ID: {{$json._id}}</p>\n   <p>Best Regards,<br>AI Automation Team</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [-320, -32],
+      "id": "df529608-46b8-4958-9aa0-83d8f85fd3ee",
+      "name": "Send a message",
+      "webhookId": "b5ba1fef-8b7f-4071-bc28-f06817e6aa1c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vSek2mmkMgjbccOC",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@gmail.com",
+          "mode": "list",
+          "cachedResultName": "your-email@gmail.com"
+        },
+        "additionalFields": {
+          "description": "=Candidate Interview schehuled via n8n automation",
+          "summary": "=Interview Call"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [-128, -32],
+      "id": "b2a00977-e5e8-4284-bf0c-65b7fdbe0703",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "teVanSvg7rgGPop4",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Insert documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert documents": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "53f3b329-b1f8-46d9-ace6-92332fb04164",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "63c96722cf28bc9088e479ee2c35007dc9e5dc51375e61cc8572d50df18448a2"
+  },
+  "nodeGroups": [],
+  "id": "p4S89uZYWRFkbzrg",
+  "tags": []
+}
