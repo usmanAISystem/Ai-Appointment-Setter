@@ -35,7 +35,7 @@
 ‎
 
 ‎🚀 Setup
-‎Clone the repo: git clone https://github.com/https:/usmanAISystem/Ai-Appointment-Setter.git
+‎Clone the repo: git clone https://github.com/usmanAISystem/Ai-Appointment-Setter.git
 ‎Import the n8n workflow JSON file
 ‎Add your API keys for Gmail, Calendar, and MongoDB Atlas in n8n credentials
 ‎
