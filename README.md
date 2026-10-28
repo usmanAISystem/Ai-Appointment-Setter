@@ -1,9 +1,9 @@
-‎� AI Appointment Setter Agent - Books Clients 24/7
+‎ AI Appointment Setter Agent - Books Clients 24/7
 ‎
 
-‎￼
+‎
 ‎An autonomous AI Agent that replies to leads instantly, qualifies them like a human, and books meetings directly into Google Calendar.
-‎￼
+‎
 ‎
 ‎🎥 Video Demo & Tutorial
 ‎Watch Full Build Video Here: https://youtu.be/HQGHQEJMlNg
